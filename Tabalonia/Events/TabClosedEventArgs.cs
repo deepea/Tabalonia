@@ -2,5 +2,5 @@
 
 public class TabClosedEventArgs(object? item) : EventArgs
 {
-	public object? Item { get; } = item;
+    public object? Item { get; } = item;
 }

@@ -65,14 +65,14 @@ public class TabsControl : TabControl
         AvaloniaProperty.Register<TabsControl, Func<object>?>(nameof(NewItemFactory));
 
 
-	public static readonly StyledProperty<EventHandler<TabClosedEventArgs>?> TabClosedProperty =
-		AvaloniaProperty.Register<TabsControl, EventHandler<TabClosedEventArgs>?>(nameof(TabClosed));
+    public static readonly StyledProperty<EventHandler<TabClosedEventArgs>?> TabClosedProperty =
+        AvaloniaProperty.Register<TabsControl, EventHandler<TabClosedEventArgs>?>(nameof(TabClosed));
 
-	public static readonly StyledProperty<EventHandler<TabClosingEventArgs>?> TabClosingProperty =
-	    AvaloniaProperty.Register<TabsControl, EventHandler<TabClosingEventArgs>?>(nameof(TabClosing));
+    public static readonly StyledProperty<EventHandler<TabClosingEventArgs>?> TabClosingProperty =
+        AvaloniaProperty.Register<TabsControl, EventHandler<TabClosingEventArgs>?>(nameof(TabClosing));
 
 
-	public static readonly StyledProperty<EventHandler<CloseLastTabEventArgs>?> LastTabClosedActionProperty =
+    public static readonly StyledProperty<EventHandler<CloseLastTabEventArgs>?> LastTabClosedActionProperty =
         AvaloniaProperty.Register<TabsControl, EventHandler<CloseLastTabEventArgs>?>(nameof(LastTabClosedAction));
     
     
@@ -171,21 +171,21 @@ public class TabsControl : TabControl
     }
 
 
-	public EventHandler<TabClosedEventArgs>? TabClosed
-	{
-		get => GetValue(TabClosedProperty);
-		set => SetValue(TabClosedProperty, value);
-	}
+    public EventHandler<TabClosedEventArgs>? TabClosed
+    {
+        get => GetValue(TabClosedProperty);
+        set => SetValue(TabClosedProperty, value);
+    }
 
 
-	public EventHandler<TabClosingEventArgs>? TabClosing
-	{
-		get => GetValue(TabClosingProperty);
-		set => SetValue(TabClosingProperty, value);
-	}
+    public EventHandler<TabClosingEventArgs>? TabClosing
+    {
+        get => GetValue(TabClosingProperty);
+        set => SetValue(TabClosingProperty, value);
+    }
 
 
-	public EventHandler<CloseLastTabEventArgs>? LastTabClosedAction
+    public EventHandler<CloseLastTabEventArgs>? LastTabClosedAction
     {
         get => GetValue(LastTabClosedActionProperty);
         set => SetValue(LastTabClosedActionProperty, value);
@@ -283,21 +283,21 @@ public class TabsControl : TabControl
         
         int removedItemIndex = itemsList.IndexOf(item);
 
-		if (removedItemIndex == -1)
-			return;
+        if (removedItemIndex == -1)
+            return;
 
-		TabClosingEventArgs tabClosingEventArgs = new(item);
-		TabClosing?.Invoke(this, tabClosingEventArgs);
+        TabClosingEventArgs tabClosingEventArgs = new(item);
+        TabClosing?.Invoke(this, tabClosingEventArgs);
         if (tabClosingEventArgs.Cancel)
             return;
 
-		bool removedItemIsSelected = SelectedItem == item;
+        bool removedItemIsSelected = SelectedItem == item;
             
         itemsList.Remove(item);
 
         TabClosed?.Invoke(this, new TabClosedEventArgs(item));
 
-		if (itemsList.Count == 0)
+        if (itemsList.Count == 0)
             LastTabClosedAction?.Invoke(this, new CloseLastTabEventArgs(GetThisWindow()));
         else if (removedItemIsSelected) 
             SetSelectedNewTab(itemsList, removedItemIndex);
