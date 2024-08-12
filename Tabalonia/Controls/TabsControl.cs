@@ -65,8 +65,15 @@ public class TabsControl : TabControl
     
     public static readonly StyledProperty<Func<object>?> NewItemFactoryProperty =
         AvaloniaProperty.Register<TabsControl, Func<object>?>(nameof(NewItemFactory));
-    
-    
+
+
+    public static readonly StyledProperty<EventHandler<TabClosedEventArgs>?> TabClosedProperty =
+        AvaloniaProperty.Register<TabsControl, EventHandler<TabClosedEventArgs>?>(nameof(TabClosed));
+
+    public static readonly StyledProperty<EventHandler<TabClosingEventArgs>?> TabClosingProperty =
+        AvaloniaProperty.Register<TabsControl, EventHandler<TabClosingEventArgs>?>(nameof(TabClosing));
+
+
     public static readonly StyledProperty<EventHandler<CloseLastTabEventArgs>?> LastTabClosedActionProperty =
         AvaloniaProperty.Register<TabsControl, EventHandler<CloseLastTabEventArgs>?>(nameof(LastTabClosedAction));
     
@@ -164,8 +171,22 @@ public class TabsControl : TabControl
         get => GetValue(NewItemFactoryProperty);
         set => SetValue(NewItemFactoryProperty, value);
     }
-    
-    
+
+
+    public EventHandler<TabClosedEventArgs>? TabClosed
+    {
+        get => GetValue(TabClosedProperty);
+        set => SetValue(TabClosedProperty, value);
+    }
+
+
+    public EventHandler<TabClosingEventArgs>? TabClosing
+    {
+        get => GetValue(TabClosingProperty);
+        set => SetValue(TabClosingProperty, value);
+    }
+
+
     public EventHandler<CloseLastTabEventArgs>? LastTabClosedAction
     {
         get => GetValue(LastTabClosedActionProperty);
@@ -263,10 +284,21 @@ public class TabsControl : TabControl
             return;
         
         int removedItemIndex = itemsList.IndexOf(item);
+
+        if (removedItemIndex == -1)
+            return;
+
+        TabClosingEventArgs tabClosingEventArgs = new(item);
+        TabClosing?.Invoke(this, tabClosingEventArgs);
+        if (tabClosingEventArgs.Cancel)
+            return;
+
         bool removedItemIsSelected = SelectedItem == item;
             
         itemsList.Remove(item);
-        
+
+        TabClosed?.Invoke(this, new TabClosedEventArgs(item));
+
         if (itemsList.Count == 0)
             LastTabClosedAction?.Invoke(this, new CloseLastTabEventArgs(GetThisWindow()));
         else if (removedItemIsSelected) 
