@@ -386,7 +386,7 @@ public class TabsControl : TabControl
             {
                 int itemIndex = list.IndexOf(item);
 
-				if (container.LogicalIndex != itemIndex)
+                if (container.LogicalIndex != itemIndex)
                 {
                     if (!TryMoveAsObservableCollection(ItemsSource, itemIndex, container.LogicalIndex))
                     {
@@ -404,39 +404,39 @@ public class TabsControl : TabControl
             }
         }
 
-	    bool TryMoveAsObservableCollection(IEnumerable enumerable, int oldIndex, int newIndex)
-		{
-			Type enumerableType = enumerable.GetType();
+        bool TryMoveAsObservableCollection(IEnumerable enumerable, int oldIndex, int newIndex)
+        {
+            Type enumerableType = enumerable.GetType();
 
-			if (!enumerable.GetType().IsGenericType)
-			{
-				return false;
-			}
+            if (!enumerable.GetType().IsGenericType)
+            {
+                return false;
+            }
 
-			if (enumerableType.GetGenericTypeDefinition() != typeof(ObservableCollection<>))
-			{
-				return false;
-			}
+            if (enumerableType.GetGenericTypeDefinition() != typeof(ObservableCollection<>))
+            {
+                return false;
+            }
 
-			Type? collectionType = enumerableType.GetGenericArguments().FirstOrDefault();
+            Type? collectionType = enumerableType.GetGenericArguments().FirstOrDefault();
 
-			if (collectionType is null)
-			{
-				return false;
-			}
+            if (collectionType is null)
+            {
+                return false;
+            }
 
-			MethodInfo? moveMethod = typeof(ObservableCollection<>).MakeGenericType(collectionType).GetMethod("Move");
+            MethodInfo? moveMethod = typeof(ObservableCollection<>).MakeGenericType(collectionType).GetMethod("Move");
 
-			if (moveMethod is null)
-			{
-				return false;
-			}
+            if (moveMethod is null)
+            {
+                return false;
+            }
 
-			moveMethod.Invoke(enumerable, new object[2] { oldIndex, newIndex });
+            moveMethod.Invoke(enumerable, new object[2] { oldIndex, newIndex });
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
     
 
     private void WindowDragThumbOnDoubleTapped(object? sender, RoutedEventArgs e)
