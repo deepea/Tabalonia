@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows.Input;
 using Tabalonia.Events;
 using Tabalonia.Panels;
@@ -382,10 +384,15 @@ public class TabsControl : TabControl
         
             if (ItemsSource is IList list)
             {
-                if (container.LogicalIndex != list.IndexOf(item))
+                int itemIndex = list.IndexOf(item);
+
+                if (container.LogicalIndex != itemIndex)
                 {
-                    list.Remove(item);
-                    list.Insert(container.LogicalIndex, item);
+                    if (!TryMoveAsObservableCollection(ItemsSource, itemIndex, container.LogicalIndex))
+                    {
+                        list.Remove(item);
+                        list.Insert(container.LogicalIndex, item);
+                    }
                         
                     SelectedItem = item;
 
@@ -395,6 +402,39 @@ public class TabsControl : TabControl
                         dragTabItem.LogicalIndex = i++;
                 }
             }
+        }
+
+        bool TryMoveAsObservableCollection(IEnumerable enumerable, int oldIndex, int newIndex)
+        {
+            Type enumerableType = enumerable.GetType();
+
+            if (!enumerable.GetType().IsGenericType)
+            {
+                return false;
+            }
+
+            if (enumerableType.GetGenericTypeDefinition() != typeof(ObservableCollection<>))
+            {
+                return false;
+            }
+
+            Type? collectionType = enumerableType.GetGenericArguments().FirstOrDefault();
+
+            if (collectionType is null)
+            {
+                return false;
+            }
+
+            MethodInfo? moveMethod = typeof(ObservableCollection<>).MakeGenericType(collectionType).GetMethod("Move");
+
+            if (moveMethod is null)
+            {
+                return false;
+            }
+
+            moveMethod.Invoke(enumerable, new object[2] { oldIndex, newIndex });
+
+            return true;
         }
     }
     
